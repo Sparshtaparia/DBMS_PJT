@@ -24,11 +24,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
-    // ✅ skip filtering for these endpoints
+    // ✅ skip filtering for these endpoints (servletPath excludes context-path)
     private static final List<String> EXCLUDED_URLS = List.of(
-            "/api/v1.0/login",
-            "/api/v1.0/register",
-            "/api/v1.0/activate",
+            "/login",
+            "/register",
+            "/activate",
             "/status",
             "/health"
     );
