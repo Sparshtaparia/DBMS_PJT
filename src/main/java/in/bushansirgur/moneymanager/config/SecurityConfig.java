@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 
 
 import java.util.List;
@@ -39,12 +40,13 @@ public class SecurityConfig {
         httpSecurity.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/status",
                                 "/health",
-                                "/api/v1.0/register",
-                                "/api/v1.0/activate",
-                                "/api/v1.0/login"
+                                "/register",
+                                "/activate",
+                                "/login"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
