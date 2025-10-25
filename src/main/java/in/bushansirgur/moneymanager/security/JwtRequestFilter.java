@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +23,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
+
+    // ✅ skip filtering for these endpoints
+    private static final List<String> EXCLUDED_URLS = List.of(
+            "/api/v1.0/login",
+            "/api/v1.0/register",
+            "/api/v1.0/activate",
+            "/status",
+            "/health"
+    );
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return EXCLUDED_URLS.stream().anyMatch(path::equalsIgnoreCase)
+                || request.getMethod().equalsIgnoreCase("OPTIONS");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -50,11 +67,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    // ✅ This ensures Spring Security ignores OPTIONS (preflight) requests
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return "OPTIONS".equalsIgnoreCase(request.getMethod());
     }
 }
